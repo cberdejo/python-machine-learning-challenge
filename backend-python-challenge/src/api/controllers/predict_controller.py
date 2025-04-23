@@ -20,6 +20,15 @@ logger = logging.getLogger(__name__)
 async def predict_controller(
     request: Request, model: SyntheticDataParams, animal_data: List[AnimalData]
 ):
+    """
+    Predict using the model and data provided.
+    Args:
+        request (Request): The FastAPI request object.
+        model (SyntheticDataParams): Model parameters.
+        animal_data (List[AnimalData]): List of animal data to predict.
+    Returns:
+        JSONResponse: Response containing the prediction results.
+    """
     response = GenericResponse(code=500, message="Something went wrong", data=None)
 
     minio_client: Minio = request.app.state.minio_client
