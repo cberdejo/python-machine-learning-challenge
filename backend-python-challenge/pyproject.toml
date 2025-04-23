@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "backend-python-challenge"
+version = "0.1.0"
+description = "Api that clusters and labels data and create a machine-learning model to use."
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.115.12",
+    "hdbscan>=0.8.40",
+    "httpx>=0.28.1",
+    "minio>=7.2.15",
+    "polars>=1.27.1",
+    "python-dotenv>=1.1.0",
+    "scikit-learn>=1.6.1",
+    "uvicorn>=0.34.2",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5",
+    "ruff>=0.11.6",
+]
+
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+
+[project.scripts]
+backend-start = "api.main:main"
