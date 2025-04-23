@@ -19,6 +19,15 @@ logger = logging.getLogger(__name__)
 async def validate_controller(
     request: Request, model: SyntheticDataParams, data: SyntheticDataParams
 ):
+    """
+    Validate the model using the data provided.
+    Args:
+        request (Request): The FastAPI request object.
+        model (SyntheticDataParams): Model parameters.
+        data (SyntheticDataParams): Data parameters.
+    Returns:
+        JSONResponse: Response containing the validation results.
+    """
     response = GenericResponse(code=500, message="Something went wrong", data=None)
 
     minio_client: Minio = request.app.state.minio_client
