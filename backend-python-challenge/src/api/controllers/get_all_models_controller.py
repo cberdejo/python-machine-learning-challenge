@@ -24,7 +24,9 @@ async def get_all_models(request: Request) -> JSONResponse:
             prefix="",
             recursive=False,
         )
-        response.data = [model.object_name for model in models]
+        #delete last character '/' from the path
+        models_formatted = [model.object_name[:-1] for model in models]
+        response.data = models_formatted
         response.code = 200
         response.message = "Models fetched successfully."
         return JSONResponse(status_code=response.code, content=response.model_dump())
