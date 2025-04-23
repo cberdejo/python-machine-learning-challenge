@@ -43,6 +43,16 @@ def save_metrics_as_json(
 async def train_model_controller(
     request: Request, seed: int, number_of_datapoints: int
 ):
+    """
+    Train a model using where the data is generated with the provided seed and number of datapoints, and store it in MinIO.
+    Args:
+        request (Request): The FastAPI request object.
+        seed (int): Seed for random number generation.
+        number_of_datapoints (int): Number of data points to generate.
+    Returns:
+        JSONResponse: Response containing the status of the training process.
+    """
+
     response = GenericResponse(
         code=200,
         message="Model training completed successfully.",
