@@ -2,7 +2,7 @@ from api.models.generic_response import GenericResponse
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from minio import Minio
-
+from config.minio_config import BUCKET_MODELS
 
 async def get_all_models(request: Request) -> JSONResponse:
     """
@@ -20,11 +20,11 @@ async def get_all_models(request: Request) -> JSONResponse:
     # Get the list of models from MinIO
     try:
         models = minio_client.list_objects(
-            bucket_name="models",
+            bucket_name=BUCKET_MODELS,
             prefix="",
             recursive=False,
         )
-        #delete last character '/' from the path
+        # delete last character '/' from the path
         models_formatted = [model.object_name[:-1] for model in models]
         response.data = models_formatted
         response.code = 200
