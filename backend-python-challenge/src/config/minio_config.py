@@ -7,9 +7,10 @@ load_dotenv()
 
 
 logger = logging.getLogger(__name__)
-BUCKET_MODELS = "models"
 
+BUCKET_MODELS = "models"
 BUCKET_DATA = "data"
+BUCKET_PREDICTIONS = "predictions"
 
 
 MINIOCONFIG = Minio(
@@ -27,7 +28,7 @@ def setup_minio_buckets(client: Minio):
     Raises:
         S3Error: If there is an error creating or verifying the bucket.
     """
-    for bucket in [BUCKET_MODELS, BUCKET_DATA]:
+    for bucket in [BUCKET_MODELS, BUCKET_DATA, BUCKET_PREDICTIONS]:
         try:
             if not client.bucket_exists(bucket):
                 logger.info(f"Bucket '{bucket}' not found. Creating it...")

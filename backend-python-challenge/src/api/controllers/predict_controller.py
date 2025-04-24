@@ -4,8 +4,9 @@ from api.models.generic_response import GenericResponse
 from api.models.synthetic_data import SyntheticDataParams
 from api.utils import (
     get_model_deserialized_from_minio,
+    save_prediction_to_minio,
 )
-from config.minio_config import BUCKET_DATA, BUCKET_MODELS
+from config.minio_config import BUCKET_PREDICTIONS, BUCKET_MODELS
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from machine_learning.predict import predict
@@ -49,9 +50,10 @@ async def predict_controller(
             animal_data, model, label_encoder=label_encoder
         )
         response.data = result
-        response.message = "Model validated successfully."
+        response.message = "Prediction successfully done."
         response.code = 200
         response.data = result
+        save_prediction_to_minio(minio_client, BUCKET_PREDICTIONS, model, result)
         return JSONResponse(status_code=response.code, content=response.model_dump())
     except Exception as e:
         logger.error(f"Error validating model: {str(e)}")
