@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "visualization"
+version = "0.1.0"
+description = "Prototype visualization for api"
+authors = [
+    { name = "cberdejo", email = "cberdejo@uma.es" }
+]
+requires-python = ">=3.10"
+dependencies = [
+    "httpx>=0.28.1",
+    "python-dotenv>=1.1.0",
+    "streamlit>=1.44.1",
+]
+
+[project.scripts]
+visualization = "visualization:main"
+
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+

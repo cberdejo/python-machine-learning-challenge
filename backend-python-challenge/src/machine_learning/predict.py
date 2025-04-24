@@ -32,11 +32,8 @@ def predict(
     # Prepare features for prediction
     X = prepare_data_for_prediction(df)
 
-    # Scale data
-    X_scaled = scale_data(X)
-
     # Predict using the model
-    y_pred = model.predict(X_scaled)
+    y_pred = model.predict(X)
     labels = label_encoder.inverse_transform(y_pred)
 
     # Add labels to the original data

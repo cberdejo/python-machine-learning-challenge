@@ -91,6 +91,7 @@ def split_data(X, y, test_size: float = 0.2, random_state: int = 42) -> tuple:
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=test_size, random_state=random_state, stratify=y
     )
+
     return X_train, X_test, y_train, y_test
 
 
@@ -105,9 +106,7 @@ def train_model_with_grid_search(
 ) -> tuple:
     """Entrena modelo usando GridSearchCV con pipeline de escalado."""
 
-    pipeline = Pipeline([("scaler", StandardScaler()), ("model", model)])
-
-    grid = GridSearchCV(pipeline, param_grid, scoring=scoring, cv=cv, n_jobs=-1)
+    grid = GridSearchCV(model, param_grid, scoring=scoring, cv=cv, n_jobs=-1)
     grid.fit(X, y)
 
     if verbose:
@@ -147,10 +146,9 @@ def evaluate_model(
 
     best_params = grid_search.best_params_ if grid_search else None
     best_score = grid_search.best_score_ if grid_search else None
-    base_model = model.named_steps["model"] if isinstance(model, Pipeline) else model
 
     return AnalysisResult(
-        model=base_model,
+        model=model,
         best_params=best_params,
         best_score=best_score,
         accuracy=acc,

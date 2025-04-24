@@ -1,8 +1,11 @@
+from datetime import date
 from sqlite3 import Date
+from typing import Optional
 from api.controllers.get_all_models_controller import get_all_models
+from api.controllers.get_predictions_controller import get_predictions_by_time_period
 from api.models.animal_data import PredictRequest
 from api.models.synthetic_data import ValidateRequest
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Query, Request
 
 from api.controllers.validate_controller import validate_controller
 from api.controllers.predict_controller import predict_controller
@@ -17,6 +20,15 @@ router = APIRouter(
 @router.get("/models")
 async def get_models(request: Request):
     return await get_all_models(request)
+
+
+@router.get("/predictions")
+async def get_predictions(
+    request: Request,
+    start: Optional[date] = Query(None),
+    end: Optional[date] = Query(None),
+):
+    return await get_predictions_by_time_period(request, start, end)
 
 
 @router.post("/train")
