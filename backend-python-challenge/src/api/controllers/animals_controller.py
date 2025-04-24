@@ -1,11 +1,10 @@
-import datetime
+import os
 from api.models.generic_response import GenericResponse
 from clustering.cluster_data import cluster_and_label_data, label_dataset_no_clustering
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
 import httpx
-import asyncio
 from minio import Minio
 from config.minio_config import BUCKET_DATA
 import logging
@@ -13,6 +12,7 @@ import io
 import polars as ps
 
 logger = logging.getLogger(__name__)
+DATA_SERVICE_URL = os.getenv("DATA_SERVICE_URL", "http://data_service:8777")
 
 
 def save_dataset_as_datafile(data: list[dict]) -> io.BytesIO:
@@ -52,12 +52,14 @@ async def process_and_store_data(
         Exception: If there is an error fetching data from the API or storing it in Minio.
     """
 
-    url = "http://localhost:8777/api/v1/animals/data"
+    # url = "http://localhost:8777/api/v1/animals/data"
     headers = {"accept": "application/json", "Content-Type": "application/json"}
     payload = {"seed": seed, "number_of_datapoints": number_of_datapoints}
 
     async with httpx.AsyncClient() as client:
-        response = await client.post(url, headers=headers, json=payload)
+        response = await client.post(
+            f"{DATA_SERVICE_URL}/api/v1/animals/data", headers=headers, json=payload
+        )
 
         if response.status_code == 200:
             logger.info("Data received successfully from the API.")

@@ -21,9 +21,15 @@ router = APIRouter(
 async def get_models(request: Request):
     return await get_all_models(request)
 
+
 @router.get("/predictions")
-async def get_predictions(request: Request, start: Optional[date] = Query(None), end: Optional[date] = Query(None)):
-    return await get_predictions_by_time_period(request,start,end)
+async def get_predictions(
+    request: Request,
+    start: Optional[date] = Query(None),
+    end: Optional[date] = Query(None),
+):
+    return await get_predictions_by_time_period(request, start, end)
+
 
 @router.post("/train")
 async def train_model(

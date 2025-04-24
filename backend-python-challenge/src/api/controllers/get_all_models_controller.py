@@ -4,6 +4,7 @@ from fastapi.responses import JSONResponse
 from minio import Minio
 from config.minio_config import BUCKET_MODELS
 
+
 async def get_all_models(request: Request) -> JSONResponse:
     """
     Get all models from the database.

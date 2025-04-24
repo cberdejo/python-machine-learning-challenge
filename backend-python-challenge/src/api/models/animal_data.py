@@ -11,9 +11,11 @@ class AnimalData(BaseModel):
     has_tail: bool
     label: Optional[str] = None  # Optional label for the animal data
 
+
 class Prediction(BaseModel):
     date: str  # Date of the prediction
     animal_data: List[AnimalData]  # List of animal data for the prediction
+
 
 class PredictRequest(BaseModel):
     model: SyntheticDataParams

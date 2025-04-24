@@ -3,14 +3,16 @@ from io import StringIO
 from typing import Optional
 from api.models.animal_data import AnimalData, Prediction
 from api.models.generic_response import GenericResponse
-from fastapi import Request
+from fastapi import Request, Response
 from fastapi.responses import JSONResponse
 from minio import Minio
 from config.minio_config import BUCKET_PREDICTIONS
 import polars as ps
 
 
-async def get_predictions_by_time_period(request: Request,start: Optional[date],end:Optional[date])-> JSONResponse:
+async def get_predictions_by_time_period(
+    request: Request, start: Optional[date], end: Optional[date]
+) -> JSONResponse:
     """
     Get predictions by time period.
     Args:
@@ -20,7 +22,7 @@ async def get_predictions_by_time_period(request: Request,start: Optional[date],
     Returns:
         A JSON response with the predictions for the specified time period.
     """
-    response:GenericResponse = GenericResponse(
+    response: GenericResponse = GenericResponse(
         code=500,
         message="Internal Server Error",
         data=None,
@@ -29,7 +31,7 @@ async def get_predictions_by_time_period(request: Request,start: Optional[date],
         # Get the database connection from the request state
         minio_client: Minio = request.app.state.minio_client
 
-        objects  = minio_client.list_objects(
+        objects = minio_client.list_objects(
             bucket_name=BUCKET_PREDICTIONS,
             prefix="",
             recursive=True,
@@ -37,7 +39,7 @@ async def get_predictions_by_time_period(request: Request,start: Optional[date],
 
         # Filter the predictions based on the time period
         predictions_filtered = []
-       
+
         for obj in objects:
             try:
                 obj_date_str = obj.object_name.split("/")[0]
@@ -51,7 +53,7 @@ async def get_predictions_by_time_period(request: Request,start: Optional[date],
                 continue
 
             # Leer el archivo prediction.data
-           
+
             try:
                 obj_data = minio_client.get_object(BUCKET_PREDICTIONS, obj.object_name)
                 content = obj_data.read().decode("utf-8").strip()
@@ -68,25 +70,19 @@ async def get_predictions_by_time_period(request: Request,start: Optional[date],
                         weight=row["weight"],
                         has_wings=row["has_wings"],
                         has_tail=row["has_tail"],
-                        label=row.get("label")
+                        label=row.get("label"),
                     )
                     for row in df.to_dicts()
                 ]
 
-                prediction = Prediction(
-                    date=obj_date_str,
-                    animal_data=animal_list
-                )
+                prediction = Prediction(date=obj_date_str, animal_data=animal_list)
                 predictions_filtered.append(prediction)
             except Exception as e:
                 continue
 
-        # If no predictions are found, return a 404 response
+        # If no predictions are found, return a 204 response
         if not predictions_filtered:
-            response.code = 404
-            response.message = "No predictions found for the specified time period."
-            return JSONResponse(status_code=response.code, content=response.dict())
-
+            return Response(status_code=204)
         # Return the predictions as a JSON response
         response.code = 200
         response.message = "Predictions retrieved successfully."

@@ -1,10 +1,8 @@
-
 import streamlit as st
 import httpx
 
 
-
-@st.cache_data(ttl=300) 
+@st.cache_data(ttl=300)
 def fetch_models_from_api(api_base: str) -> list:
     """
     Fetches the list of models from the API.
@@ -21,7 +19,7 @@ def fetch_models_from_api(api_base: str) -> list:
     except Exception as e:
         st.error(f"Error fetching models: {e}")
         return []
-    
+
 
 def train_model(seed, num_datapoints, api_base: str) -> dict:
     """
@@ -33,13 +31,16 @@ def train_model(seed, num_datapoints, api_base: str) -> dict:
     """
     try:
         with httpx.Client(timeout=60.0) as client:
-            response = client.post(f"{api_base}/train?seed={seed}&number_of_datapoints={num_datapoints}")
+            response = client.post(
+                f"{api_base}/train?seed={seed}&number_of_datapoints={num_datapoints}"
+            )
             response.raise_for_status()
             fetch_models_from_api.clear()
             return {"success": True, "data": response.json()}
-        
+
     except Exception as e:
         return {"success": False, "error": str(e)}
+
 
 def predict(selected_model: str, api_base: str) -> None:
     """
@@ -53,16 +54,13 @@ def predict(selected_model: str, api_base: str) -> None:
             seed_str, datapoints_str = selected_model.split("-")
             model_params = {
                 "seed": int(seed_str),
-                "number_of_datapoints": int(datapoints_str)
+                "number_of_datapoints": int(datapoints_str),
             }
         except ValueError:
             st.error("Invalid model format. Expected format: seed-number_of_datapoints")
             return
 
-        payload = {
-            "model": model_params,
-            "data": st.session_state.animal_entries
-        }
+        payload = {"model": model_params, "data": st.session_state.animal_entries}
 
         with httpx.Client(timeout=10.0) as client:
             response = client.post(f"{api_base}/predict", json=payload)
@@ -79,7 +77,8 @@ def predict(selected_model: str, api_base: str) -> None:
     except Exception as e:
         st.error(f"Error: {e}")
 
-@st.cache_data(ttl=300) 
+
+@st.cache_data(ttl=300)
 def fetch_history(api_base: str, params):
     try:
         with httpx.Client(timeout=30.0) as client:
