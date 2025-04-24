@@ -63,7 +63,7 @@ This project includes a backend and frontend architecture with support for local
 
 ## 🚀 Running the Project
 
-### 🛠️ Before You StartBefore You Start
+### 🛠️ Before You Start
 
 Copy the `.env-template` file to `.env` and complete the necessary environment variables.
 
