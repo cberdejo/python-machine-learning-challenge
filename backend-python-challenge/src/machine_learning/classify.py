@@ -1,7 +1,9 @@
 import polars as ps
 from sklearn.calibration import LabelEncoder
+from sklearn.discriminant_analysis import StandardScaler
 from sklearn.ensemble import VotingClassifier
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.pipeline import Pipeline
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 
@@ -32,9 +34,11 @@ def classify_data_using_knn(
         "model__metric": ["euclidean", "cosine", "manhattan"],
     }
 
-    best_model, grid = train_model_with_grid_search(
-        X, y, KNeighborsClassifier(), grid_knn
+    pipeline = Pipeline(
+        [("scaler", StandardScaler()), ("voting", KNeighborsClassifier())]
     )
+
+    best_model, grid = train_model_with_grid_search(X, y, pipeline, grid_knn)
     result = evaluate_model(best_model, X, y, label_encoder, grid_search=grid)
     return result, label_encoder
 
@@ -60,8 +64,11 @@ def classify_data_using_hard_voting(
         "model__weights": ["uniform", "distance"],
         "model__metric": ["euclidean", "cosine"],
     }
+    pipeline_knn = Pipeline(
+        [("scaler", StandardScaler()), ("model", KNeighborsClassifier())]
+    )
 
-    knn_model, _ = train_model_with_grid_search(X, y, KNeighborsClassifier(), grid_knn)
+    knn_model, _ = train_model_with_grid_search(X, y, pipeline_knn, grid_knn)
 
     # Decision Tree Classifier
     grid_dtc = {
@@ -69,9 +76,11 @@ def classify_data_using_hard_voting(
         "model__max_depth": [3, 5],
         "model__min_samples_split": [2, 4],
     }
-    dtc_model, _ = train_model_with_grid_search(
-        X, y, DecisionTreeClassifier(), grid_dtc
+
+    pipeline_dtc = Pipeline(
+        [("scaler", StandardScaler()), ("model", DecisionTreeClassifier())]
     )
+    dtc_model, _ = train_model_with_grid_search(X, y, pipeline_dtc, grid_dtc)
 
     # SVC Classifier
     grid_svc = {
@@ -79,14 +88,24 @@ def classify_data_using_hard_voting(
         "model__kernel": ["linear", "rbf"],
         "model__gamma": [0.01, 0.1],
     }
-    svc_model, _ = train_model_with_grid_search(X, y, SVC(), grid_svc)
+
+    pipeline_svc = Pipeline([("scaler", StandardScaler()), ("model", SVC())])
+
+    svc_model, _ = train_model_with_grid_search(X, y, pipeline_svc, grid_svc)
+
     # Hard Voting Classifier
     estimators = [
         ("knn", knn_model.named_steps["model"]),
         ("dtc", dtc_model.named_steps["model"]),
         ("svc", svc_model.named_steps["model"]),
     ]
-    voting_clf = VotingClassifier(estimators=estimators, voting="hard")
 
-    result = evaluate_model(voting_clf, X, y)
+    pipeline = Pipeline(
+        [
+            ("scaler", StandardScaler()),
+            ("voting", VotingClassifier(estimators=estimators, voting="hard")),
+        ]
+    )
+
+    result = evaluate_model(pipeline, X, y)
     return result, label_encoder
