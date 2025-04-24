@@ -3,13 +3,19 @@ import httpx
 from dotenv import load_dotenv
 import os
 
-from visualization.api_calls import fetch_history, fetch_models_from_api, predict, train_model
+from visualization.api_calls import (
+    fetch_history,
+    fetch_models_from_api,
+    predict,
+    train_model,
+)
 
 
 # Load environment variables from .env file
 load_dotenv()
 
-API_BASE = f"{os.getenv('HOST', '0.0.0.0')}/api/v1/mpc"
+API_BASE = os.getenv("API_BASE", "http:backend:800") + "/api/v1/mpc"
+
 
 st.set_page_config(page_title="Animal Predictor", layout="centered")
 # --- NAVBAR ---
@@ -39,7 +45,7 @@ if section == "Train Model":
     if st.button(" Train") and not st.session_state.is_training:
         st.session_state.is_training = True
         st.session_state.training_result = None
-        st.rerun()  
+        st.rerun()
 
     if st.session_state.is_training and st.session_state.training_result is None:
         with st.spinner("Training model..."):

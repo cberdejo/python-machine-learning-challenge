@@ -14,9 +14,9 @@ BUCKET_PREDICTIONS = "predictions"
 
 
 MINIOCONFIG = Minio(
-    endpoint=os.getenv("MINIO_ENDPOINT", "localhost:9000"),
-    access_key=os.getenv("MINIO_ACCESS_KEY"),
-    secret_key=os.getenv("MINIO_SECRET_KEY"),
+    endpoint=os.getenv("MINIO_ENDPOINT", "minio:9000"),
+    access_key=os.getenv("MINIO_ROOT_USER"),
+    secret_key=os.getenv("MINIO_ROOT_PASSWORD"),
     secure=False,
 )
 

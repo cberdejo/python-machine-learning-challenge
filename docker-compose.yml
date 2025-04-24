@@ -1,0 +1,49 @@
+services:
+
+  backend:
+    build: ./backend-python-challenge
+    volumes:
+      - ./backend-python-challenge:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - minio
+      - data_service
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    env_file:
+      - ./backend-python-challenge/.env
+
+  frontend:
+    build: ./visualization
+    volumes:
+      - ./visualization:/app
+    ports:
+      - "8501:8501"
+    depends_on:
+      - backend
+    env_file:
+      - ./visualization/.env
+
+  minio:
+    image: minio/minio
+    container_name: minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+
+  data_service:
+    build:
+      context: ./py_challenge/data-service
+    ports:
+      - "8777:8777"
+
+volumes:
+  minio_data:
