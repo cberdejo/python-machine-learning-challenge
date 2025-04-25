@@ -13,7 +13,7 @@ from api.controllers.train_controller import train_model_controller
 
 
 router = APIRouter(
-    prefix="/api/v1/mpc", tags=["machine-learning", "models", "predictions"]
+    prefix="/api/v1/mpc", tags=["machine-learning"]
 )
 
 

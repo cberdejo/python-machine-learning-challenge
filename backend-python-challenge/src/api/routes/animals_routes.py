@@ -8,7 +8,7 @@ from api.controllers.animals_controller import (
     process_and_store_data,
 )
 
-router = APIRouter(prefix="/api/v1/animals", tags=["animals", "data"])
+router = APIRouter(prefix="/api/v1/animals", tags=["data"])
 
 
 @router.post(
