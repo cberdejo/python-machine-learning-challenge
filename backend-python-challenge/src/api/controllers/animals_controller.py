@@ -52,7 +52,6 @@ async def process_and_store_data(
         Exception: If there is an error fetching data from the API or storing it in Minio.
     """
 
-    # url = "http://localhost:8777/api/v1/animals/data"
     headers = {"accept": "application/json", "Content-Type": "application/json"}
     payload = {"seed": seed, "number_of_datapoints": number_of_datapoints}
 

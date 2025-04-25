@@ -12,9 +12,7 @@ from api.controllers.predict_controller import predict_controller
 from api.controllers.train_controller import train_model_controller
 
 
-router = APIRouter(
-    prefix="/api/v1/mpc", tags=["machine-learning"]
-)
+router = APIRouter(prefix="/api/v1/mpc", tags=["machine-learning"])
 
 
 @router.get("/models")

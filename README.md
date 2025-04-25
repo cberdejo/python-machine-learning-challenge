@@ -85,9 +85,9 @@ MINIO_ENDPOINT=minio:9000
 HOST=0.0.0.0
 PORT=8000
 
-DATA_SERVICE_URL=http://data_service:8777/api/v1/animals/data
+DATA_SERVICE_URL=http://data_service:8777/
 # For local development:
-# DATA_SERVICE_URL=http://localhost:8777/api/v1/animals/data
+# DATA_SERVICE_URL=http://localhost:8777/
 ```
 
 #### visualization

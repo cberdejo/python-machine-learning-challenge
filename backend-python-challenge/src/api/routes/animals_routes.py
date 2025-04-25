@@ -5,7 +5,6 @@ from minio import Minio
 from api.models.generic_response import GenericResponse
 from api.controllers.animals_controller import (
     fetch_and_store_animal_data,
-    process_and_store_data,
 )
 
 router = APIRouter(prefix="/api/v1/animals", tags=["data"])
