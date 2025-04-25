@@ -8,7 +8,7 @@
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 
-🐍 python-challenge-mlpython-challenge-ml
+# 🐍 python-challenge-mlpython-challenge-ml
 
 Solution to the [Python Challenge by jfaldanam](https://github.com/jfaldanam/py_challenge).  
 This project includes a backend and frontend architecture with support for local development and Docker containers.
@@ -105,14 +105,8 @@ API_BASE=http://backend:8000
 # For local development:
 # API_BASE=http://localhost:8000
 ```
----
-Clone the [data-service repository](https://github.com/jfaldanam/py_challenge) which provides the simulated data API:
 
-```bash
-git clone https://github.com/jfaldanam/py_challenge.git
-```
 
----
 
 ### Local Setup
 
