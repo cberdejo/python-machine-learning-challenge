@@ -1,12 +1,5 @@
-import hdbscan
-import polars as ps
-from machine_learning.machine_learning_functions import scale_data
-
-import hdbscan
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import silhouette_score
-import numpy as np
-
+from sklearn.cluster import KMeans
+import polars as pl
 
 def label_dataset_no_clustering(data: list[dict]) -> list[dict]:
     """
@@ -50,63 +43,61 @@ def label_dataset_no_clustering(data: list[dict]) -> list[dict]:
         labeled_data.append(item)
 
     return labeled_data
+ 
 
-
-def search_best_hdbscan(X):
+def label_dataset_with_clustering_polars(data: list[dict]) -> list[dict]:
     """
-    Searches for the best HDBSCAN parameters using silhouette score.
-    Args:
-        X (np.ndarray): Data to be clustered.
+    Labels a dataset of animals using clustering and domain-specific rules with Polars.
+
+    Clusters the data into 4 groups using KMeans and assigns labels based on:
+    - Number of legs
+    - Presence of wings
+    - Average weight of the cluster
+
     Returns:
-        tuple: A tuple containing the best labels, parameters, and silhouette score.
+        list[dict]: Original data with an added 'label' field.
     """
-    best_score = -1
-    best_params = {}
-    best_labels = None
+    df = pl.DataFrame(data)
 
-    for min_cluster_size in [3, 5, 10]:
-        for min_samples in [1, 5, 10]:
-            clusterer = hdbscan.HDBSCAN(
-                min_cluster_size=min_cluster_size, min_samples=min_samples
-            )
-            labels = clusterer.fit_predict(X)
+    # Convert boolean to int
+    df = df.with_columns([
+        pl.col("has_tail").cast(pl.Int8),
+        pl.col("has_wings").cast(pl.Int8)
+    ])
 
-            # Ignora casos donde solo hay ruido
-            if len(set(labels)) <= 1 or len(set(labels)) == 2 and -1 in labels:
-                continue
+    # Extract features for clustering
+    features_df = df.select(["walks_on_n_legs", "height", "weight", "has_tail", "has_wings"])
+    features = features_df.to_numpy()
 
-            score = silhouette_score(X, labels)
-            if score > best_score:
-                best_score = score
-                best_params = {
-                    "min_cluster_size": min_cluster_size,
-                    "min_samples": min_samples,
-                }
-                best_labels = labels
+    # Apply KMeans
+    kmeans = KMeans(n_clusters=4, random_state=42, n_init="auto")
+    clusters = kmeans.fit_predict(features)
 
-    return best_labels, best_params, best_score
+    # Add cluster info
+    df = df.with_columns(pl.Series(name="cluster", values=clusters))
 
+    # Compute average metrics by cluster
+    cluster_groups = df.groupby("cluster").agg([
+        pl.col("walks_on_n_legs").mode().alias("mode_legs"),
+        pl.col("has_wings").mean().alias("mean_wings"),
+        pl.col("weight").mean().alias("mean_weight")
+    ])
 
-def cluster_and_label_data(df: ps.DataFrame) -> tuple[ps.DataFrame, dict, float]:
-    """
-    NOT FINISHED
-    Clusters the data using HDBSCAN and labels the clusters (excluding outliers).
-    Args:
-        df (ps.DataFrame): DataFrame with features to be clustered.
-    Returns:
-        tuple: Filtered labeled DataFrame, best parameters, and silhouette score.
-    """
-    df_scaled = scale_data(df)
-    best_labels, best_params, best_score = search_best_hdbscan(df_scaled)
+    # Determine labels per cluster
+    label_map = {}
+    weight_mean_global = df.select(pl.col("weight").mean()).item()
 
-    # Get the best labels and add them to the DataFrame
-    df = df.with_columns(ps.Series("cluster", best_labels))
+    for row in cluster_groups.iter_rows(named=True):
+        if row["mode_legs"] == 2:
+            label_map[row["cluster"]] = "chicken" if row["mean_wings"] > 0.5 else "kangaroo"
+        elif row["mode_legs"] == 4:
+            label_map[row["cluster"]] = "elephant" if row["mean_weight"] > weight_mean_global else "dog"
+        else:
+            label_map[row["cluster"]] = "outlier"
 
-    # Delete outliers (cluster -1)
-    df_clean = df.filter(df["cluster"] != -1)
+    # Apply labels
+    df = df.with_columns(
+        pl.col("cluster").map_dict(label_map).alias("label")
+    )
 
-    n_clusters = len(set(best_labels)) - (1 if -1 in best_labels else 0)
-
-    # Rename clusters to labels
-
-    return df_clean, best_params, best_score
+    return df.drop("cluster").to_dicts()
