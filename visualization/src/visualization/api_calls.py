@@ -70,7 +70,7 @@ def predict(selected_model: str, api_base: str) -> None:
             if "data" in result:
                 st.success("Prediction results:")
                 for i, item in enumerate(result["data"]):
-                    st.write(f"Animal {i+1} → Label: **{item.get('label', 'N/A')}**")
+                    st.write(f"Animal {i + 1} → Label: **{item.get('label', 'N/A')}**")
             else:
                 st.error("Unexpected response format.")
             fetch_history.clear()

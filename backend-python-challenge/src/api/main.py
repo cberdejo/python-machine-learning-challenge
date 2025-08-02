@@ -2,6 +2,7 @@ import uvicorn
 from dotenv import load_dotenv
 from config.settings import settings
 
+
 def main():
     """
     Main function to run the FastAPI application.

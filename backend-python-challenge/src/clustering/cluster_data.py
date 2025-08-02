@@ -1,6 +1,7 @@
 from sklearn.cluster import KMeans
 import polars as pl
 
+
 def label_dataset_no_clustering(data: list[dict]) -> list[dict]:
     """
     Assigns labels to animals based on their characteristics.
@@ -43,7 +44,7 @@ def label_dataset_no_clustering(data: list[dict]) -> list[dict]:
         labeled_data.append(item)
 
     return labeled_data
- 
+
 
 def label_dataset_with_clustering_polars(data: list[dict]) -> list[dict]:
     """
@@ -60,13 +61,14 @@ def label_dataset_with_clustering_polars(data: list[dict]) -> list[dict]:
     df = pl.DataFrame(data)
 
     # Convert boolean to int
-    df = df.with_columns([
-        pl.col("has_tail").cast(pl.Int8),
-        pl.col("has_wings").cast(pl.Int8)
-    ])
+    df = df.with_columns(
+        [pl.col("has_tail").cast(pl.Int8), pl.col("has_wings").cast(pl.Int8)]
+    )
 
     # Extract features for clustering
-    features_df = df.select(["walks_on_n_legs", "height", "weight", "has_tail", "has_wings"])
+    features_df = df.select(
+        ["walks_on_n_legs", "height", "weight", "has_tail", "has_wings"]
+    )
     features = features_df.to_numpy()
 
     # Apply KMeans
@@ -77,11 +79,13 @@ def label_dataset_with_clustering_polars(data: list[dict]) -> list[dict]:
     df = df.with_columns(pl.Series(name="cluster", values=clusters))
 
     # Compute average metrics by cluster
-    cluster_groups = df.groupby("cluster").agg([
-        pl.col("walks_on_n_legs").mode().alias("mode_legs"),
-        pl.col("has_wings").mean().alias("mean_wings"),
-        pl.col("weight").mean().alias("mean_weight")
-    ])
+    cluster_groups = df.groupby("cluster").agg(
+        [
+            pl.col("walks_on_n_legs").mode().alias("mode_legs"),
+            pl.col("has_wings").mean().alias("mean_wings"),
+            pl.col("weight").mean().alias("mean_weight"),
+        ]
+    )
 
     # Determine labels per cluster
     label_map = {}
@@ -89,15 +93,17 @@ def label_dataset_with_clustering_polars(data: list[dict]) -> list[dict]:
 
     for row in cluster_groups.iter_rows(named=True):
         if row["mode_legs"] == 2:
-            label_map[row["cluster"]] = "chicken" if row["mean_wings"] > 0.5 else "kangaroo"
+            label_map[row["cluster"]] = (
+                "chicken" if row["mean_wings"] > 0.5 else "kangaroo"
+            )
         elif row["mode_legs"] == 4:
-            label_map[row["cluster"]] = "elephant" if row["mean_weight"] > weight_mean_global else "dog"
+            label_map[row["cluster"]] = (
+                "elephant" if row["mean_weight"] > weight_mean_global else "dog"
+            )
         else:
             label_map[row["cluster"]] = "outlier"
 
     # Apply labels
-    df = df.with_columns(
-        pl.col("cluster").map_dict(label_map).alias("label")
-    )
+    df = df.with_columns(pl.col("cluster").map_dict(label_map).alias("label"))
 
     return df.drop("cluster").to_dicts()

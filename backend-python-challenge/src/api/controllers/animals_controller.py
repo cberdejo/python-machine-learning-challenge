@@ -1,6 +1,6 @@
 import os
 from api.models.generic_response import GenericResponse
-from clustering.cluster_data import  label_dataset_no_clustering
+from clustering.cluster_data import label_dataset_no_clustering
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
@@ -56,17 +56,17 @@ async def process_and_store_data(
     headers = {"accept": "application/json", "Content-Type": "application/json"}
     payload = {"seed": seed, "number_of_datapoints": number_of_datapoints}
 
+    print(settings.DATA_SERVICE_URL)
     async with httpx.AsyncClient() as client:
         response = await client.post(
-            f"{settings.DATA_SERVICE_URL}/api/v1/animals/data", headers=headers, json=payload
-            )
-
-        
-
+            f"{settings.DATA_SERVICE_URL}/api/v1/animals/data",
+            headers=headers,
+            json=payload,
+        )
 
         if response.status_code == 200:
             logger.info("Data received successfully from the API.")
-            
+
             # Labeling the dataset
             data = label_dataset_no_clustering(response.json())
             df, file_data = save_dataset_as_datafile(data)

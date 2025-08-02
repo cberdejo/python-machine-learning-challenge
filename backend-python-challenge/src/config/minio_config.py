@@ -3,14 +3,11 @@ import logging
 from config.settings import settings
 
 
-
-
 logger = logging.getLogger(__name__)
 
 BUCKET_MODELS = "models"
 BUCKET_DATA = "data"
 BUCKET_PREDICTIONS = "predictions"
-
 
 
 MINIOCONFIG = Minio(
