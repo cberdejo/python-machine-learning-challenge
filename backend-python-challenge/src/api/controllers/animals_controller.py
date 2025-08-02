@@ -1,6 +1,6 @@
 import os
 from api.models.generic_response import GenericResponse
-from clustering.cluster_data import cluster_and_label_data, label_dataset_no_clustering
+from clustering.cluster_data import  label_dataset_no_clustering
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
@@ -10,9 +10,10 @@ from config.minio_config import BUCKET_DATA
 import logging
 import io
 import polars as ps
+from config.settings import settings
+
 
 logger = logging.getLogger(__name__)
-DATA_SERVICE_URL = os.getenv("DATA_SERVICE_URL", "http://data_service:8777")
 
 
 def save_dataset_as_datafile(data: list[dict]) -> io.BytesIO:
@@ -57,19 +58,22 @@ async def process_and_store_data(
 
     async with httpx.AsyncClient() as client:
         response = await client.post(
-            f"{DATA_SERVICE_URL}/api/v1/animals/data", headers=headers, json=payload
-        )
+            f"{settings.DATA_SERVICE_URL}/api/v1/animals/data", headers=headers, json=payload
+            )
+
+        
+
 
         if response.status_code == 200:
             logger.info("Data received successfully from the API.")
-
+            
             # Labeling the dataset
             data = label_dataset_no_clustering(response.json())
             df, file_data = save_dataset_as_datafile(data)
 
             # Working progress
-            dataframe = ps.DataFrame(response.json())
-            cluster_and_label_data(dataframe)
+            # dataframe = ps.DataFrame(response.json())
+            # cluster_and_label_data(dataframe)
 
             # Get date and time
             file_name = f"{seed}-{number_of_datapoints}/animal_data.data"

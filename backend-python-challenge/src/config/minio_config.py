@@ -1,9 +1,8 @@
 from minio import Minio, S3Error
 import logging
-from dotenv import load_dotenv
-import os
+from config.settings import settings
 
-load_dotenv()
+
 
 
 logger = logging.getLogger(__name__)
@@ -13,10 +12,11 @@ BUCKET_DATA = "data"
 BUCKET_PREDICTIONS = "predictions"
 
 
+
 MINIOCONFIG = Minio(
-    endpoint=os.getenv("MINIO_ENDPOINT", "minio:9000"),
-    access_key=os.getenv("MINIO_ROOT_USER"),
-    secret_key=os.getenv("MINIO_ROOT_PASSWORD"),
+    endpoint=settings.MINIO_ENDPOINT,
+    access_key=settings.MINIO_ROOT_USER,
+    secret_key=settings.MINIO_ROOT_PASSWORD,
     secure=False,
 )
 

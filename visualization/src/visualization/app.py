@@ -1,7 +1,7 @@
 import streamlit as st
 import httpx
 from dotenv import load_dotenv
-import os
+
 
 from visualization.api_calls import (
     fetch_history,
@@ -10,11 +10,10 @@ from visualization.api_calls import (
     train_model,
 )
 
+from settings import settings
 
-# Load environment variables from .env file
-load_dotenv()
 
-API_BASE = os.getenv("API_BASE", "http:backend:800") + "/api/v1/mpc"
+API_BASE = settings.API_BASE
 
 
 st.set_page_config(page_title="Animal Predictor", layout="centered")

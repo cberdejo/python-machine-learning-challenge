@@ -42,7 +42,7 @@ async def validate_controller(
     except FileNotFoundError:
         logger.warning("Model not found in MinIO")
         response.code = 404
-        response.message = f"Model not found in MinIO, use train endpoint to train a model: {os.getenv('HOST', '0.0.0.0')}:8000/api/v1/train?seed={model.seed}&number_of_datapoints={model.number_of_datapoints}"
+        response.message = f"Model not found in MinIO, use train endpoint to train a model: {settings.HOST}:{settings.port}/api/v1/train?seed={model.seed}&number_of_datapoints={model.number_of_datapoints}"
         response.data = None
         return JSONResponse(status_code=response.code, content=response.model_dump())
     except Exception as e:
