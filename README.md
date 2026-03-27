@@ -1,4 +1,4 @@
-# 🐍 Python Challenge ML
+#  Python Challenge ML
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
@@ -13,17 +13,17 @@
 
 This project is a complete solution to the [Python Challenge by jfaldanam](https://github.com/jfaldanam/py_challenge), implementing a robust architecture with backend services, frontend visualization, and containerized deployment options.
 
-## ✨ Features
+## Features
 
-- 🔥 **Modern Python Stack**: Built with FastAPI, Streamlit, and modern Python tooling
-- 🐳 **Docker Support**: Full containerization with docker-compose
-- 📊 **Interactive Visualizations**: Streamlit-powered frontend for data exploration
-- 🔧 **Machine Learning Pipeline**: Complete ML workflow implementation
-- 📦 **Package Management**: Modern dependency management with `uv`
-- 🧪 **Testing Suite**: Comprehensive test coverage with pytest
-- 🛡️ **Code Quality**: Linting and formatting with Ruff
+-  **Modern Python Stack**: Built with FastAPI, Streamlit, and modern Python tooling
+-  **Docker Support**: Full containerization with docker-compose
+-  **Interactive Visualizations**: Streamlit-powered frontend for data exploration
+-  **Machine Learning Pipeline**: Complete ML workflow implementation
+-  **Package Management**: Modern dependency management with `uv`
+-  **Testing Suite**: Comprehensive test coverage with pytest
+-  **Code Quality**: Linting and formatting with Ruff
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Project Structure](#-project-structure)
 - [Quick Start](#-quick-start)
@@ -84,11 +84,11 @@ docker-compose up --build
 ```
 
 Access the application:
-- 🌐 **Frontend**: http://localhost:8501
-- 🔧 **API**: http://localhost:8000
-- 📦 **MinIO Console**: http://localhost:9001
+-  **Frontend**: http://localhost:8501
+-  **API**: http://localhost:8000
+-  **MinIO Console**: http://localhost:9001
 
-## 📦 Installation
+##  Installation
 
 ### Prerequisites
 
@@ -204,7 +204,7 @@ Edit `visualization/.env`:
 API_BASE=http://backend:8000  # Use http://localhost:8000 for local development
 ```
 
-## 🎯 Usage
+##  Usage
 
 1. **Access the Web Interface**: Navigate to http://localhost:8501
 2. **Explore the API**: Visit http://localhost:8000/docs for interactive API documentation
